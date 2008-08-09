@@ -179,7 +179,7 @@ mkdir -p plugins/azplugins
 cd plugins/azplugins
 unzip -q %{SOURCE5}
 rm -f *.jar `find ./ -name \*class`
-find ./ -name \*java | xargs %{javac} -cp `build-classpath swt-gtk`:../..:.
+find ./ -name \*java | xargs %{javac} -cp `build-classpath swt`:../..:.
 find ./ -name \*java | xargs rm
 %{jar} cvf azplugins_2.1.1.jar *
 cd ../..
@@ -188,7 +188,7 @@ unzip -q %{SOURCE6}
 cd plugins/bdcc
 unzip *.jar
 rm -f *.jar `find ./ -name \*class`
-find ./ -name \*java | xargs %{javac} -cp `build-classpath swt-gtk`:../..:.
+find ./ -name \*java | xargs %{javac} -cp `build-classpath swt`:../..:.
 find ./ -name \*java | xargs rm
 %{jar} cvf bdcc_2.2.2.jar *
 cd ../..
