@@ -1,4 +1,4 @@
-%define gcj_support 1
+%define gcj_support 0
 
 Name:           vuze
 Version:        3.1.1.0
@@ -75,8 +75,8 @@ BuildRequires:  junit
 # (anssi) needed only by patch7, not applied:
 # BuildRequires:  libgconf-java
 BuildRequires:  bouncycastle >= 0:1.33
-BuildRequires:  libswt3-gtk2
-Requires:       libswt3-gtk2
+BuildRequires:  eclipse-swt
+Requires:       eclipse-swt
 # (anssi) needed only by patch7, not applied:
 # Requires:       libgconf-java
 Requires:       bouncycastle >= 0:1.33
@@ -152,7 +152,7 @@ rm -r org/bouncycastle
 #%%patch32 -p0
 
 mkdir -p build/libs
-build-jar-repository -p build/libs jakarta-commons-cli swt-gtk log4j junit bcprov
+build-jar-repository -p build/libs jakarta-commons-cli swt log4j junit bcprov
 # (anssi) Used by unapplied patch7 only, if re-enabled remember to modify azureus.script as well
 #%if %mdkversion == 200700
 #gtk2.8 glib0.2
