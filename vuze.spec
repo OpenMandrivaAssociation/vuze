@@ -152,7 +152,8 @@ rm -r org/bouncycastle
 #%%patch32 -p0
 
 mkdir -p build/libs
-build-jar-repository -p build/libs jakarta-commons-cli swt log4j junit bcprov
+build-jar-repository -p build/libs jakarta-commons-cli log4j junit bcprov
+ln -s %{_libdir}/java/swt.jar build/libs/swt.jar
 # (anssi) Used by unapplied patch7 only, if re-enabled remember to modify azureus.script as well
 #%if %mdkversion == 200700
 #gtk2.8 glib0.2
