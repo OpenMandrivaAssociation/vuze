@@ -54,6 +54,7 @@ BuildRequires:  bouncycastle
 BuildRequires:  eclipse-swt
 BuildRequires:  junit
 BuildRequires:  glib-java-devel, libgtk-java-devel
+BuildRequires:  java-rpmbuild
 Requires:       jakarta-commons-cli, log4j
 Requires:	xulrunner
 Requires:       eclipse-swt
