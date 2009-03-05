@@ -184,17 +184,11 @@ install -m644 %{SOURCE3} $RPM_BUILD_ROOT%{_datadir}/application-registry
 rm -rf $RPM_BUILD_ROOT
 
 %post
-%if %{gcj_support}
-%{update_gcjdb}
-%endif
 %{update_desktop_database}
 %{update_mime_database}
 %update_icon_cache hicolor
 
 %postun
-%if %{gcj_support}
-%{clean_gcjdb}
-%endif
 %{clean_desktop_database}
 %{clean_mime_database}
 %clean_icon_cache hicolor
