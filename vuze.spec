@@ -2,7 +2,7 @@
 
 Name:		vuze
 Version:	4.0.0.4
-Release:	%mkrel 1
+Release:	%mkrel 2
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
 License:	GPLv2+
@@ -63,6 +63,7 @@ Requires:       bouncycastle
 Requires:	  java
 BuildRequires:    java-devel
 BuildRequires:    desktop-file-utils
+BuildRequires:    libgkt-java, glib-java
 Requires(post):   desktop-file-utils
 Requires(postun): desktop-file-utils
 BuildArch:      noarch
@@ -173,7 +174,7 @@ install -m 644 org/gudy/azureus2/ui/icons/a32.png $RPM_BUILD_ROOT%{_datadir}/ico
 install -m 644 org/gudy/azureus2/ui/icons/a64.png $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/64x64/apps/azureus.png
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
-desktop-file-install --vendor fedora 			\
+desktop-file-install \
 	--dir ${RPM_BUILD_ROOT}%{_datadir}/applications	\
 	%{SOURCE2}
 
