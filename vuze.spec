@@ -58,12 +58,13 @@ BuildRequires:  java-rpmbuild
 Requires:       jakarta-commons-cli, log4j
 Requires:	xulrunner
 Requires:       eclipse-swt
+Requires:       glib-java
 Requires:       libgconf-java
+Requires:       libgtk-java
 Requires:       bouncycastle
 Requires:	  java
 BuildRequires:    java-devel
 BuildRequires:    desktop-file-utils
-BuildRequires:    libgtk-java, glib-java
 Requires(post):   desktop-file-utils
 Requires(postun): desktop-file-utils
 BuildArch:      noarch
