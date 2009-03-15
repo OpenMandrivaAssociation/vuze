@@ -63,7 +63,7 @@ Requires:       bouncycastle
 Requires:	  java
 BuildRequires:    java-devel
 BuildRequires:    desktop-file-utils
-BuildRequires:    libgkt-java, glib-java
+BuildRequires:    libgtk-java, glib-java
 Requires(post):   desktop-file-utils
 Requires(postun): desktop-file-utils
 BuildArch:      noarch
