@@ -1,8 +1,8 @@
 %define         _newname Vuze
 
 Name:		vuze
-Version:	4.0.0.4
-Release:	%mkrel 2
+Version:	4.2.0.4
+Release:	%mkrel 1
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
 License:	GPLv2+
@@ -10,32 +10,20 @@ URL:		http://azureus.sourceforge.net
 
 Source0:	http://downloads.sourceforge.net/azureus/%{_newname}_%{version}_source.zip
 
-Source1:	azureus.script
+# Mandriva version of startup script:
+Source1:	azureus.startup.script
 Source2:	Azureus.desktop
-Source3:	azureus.applications
-#Source4:	azureus-License.txt
 
-#Source5:	azplugins_2.1.6.jar
-#Source6:	bdcc_2.2.2.zip
+# cvs -z3 -d:pserver:anonymous@azureus.cvs.sourceforge.net:/cvsroot/azureus co -p -r RELEASE-4_2_0_4 azureus2/build.xml > build.xml
+Source4:        build.xml
 
-Patch0:		azureus-remove-win32-osx-platforms.patch
-Patch2:		azureus-cache-size.patch
-Patch3:		azureus-remove-manifest-classpath.patch
-Patch9:		azureus-no-shared-plugins.patch
-Patch12:	azureus-no-updates-PluginInitializer.patch
-#Patch13:	azureus-no-updates-PluginInterfaceImpl.patch
-Patch14:	azureus-no-update-manager-AzureusCoreImpl.patch
-Patch15:	azureus-no-update-manager-CorePatchChecker.patch
-Patch16:	azureus-no-update-manager-CoreUpdateChecker.patch
-Patch18:	azureus-no-update-manager-PluginInstallerImpl.patch
-Patch19:	azureus-no-update-manager-PluginUpdatePlugin.patch
-Patch20:	azureus-no-update-manager-SWTUpdateChecker.patch
-Patch22:	azureus-no-update-manager-UpdateMonitor.patch
-Patch23:	azureus-no-update-manager-PluginInstallerImpl-2.patch
-Patch27:	azureus-SecureMessageServiceClientHelper-bcprov.patch
-Patch28:	azureus-configuration.patch
-Patch31:	azureus-fix-menu-MainMenu.patch
-
+# Fedora patches
+Patch2:         azureus-cache-size.patch
+Patch3:         azureus-remove-manifest-classpath.patch
+# Do not offer to install plugins as shared
+Patch9:         azureus-no-shared-plugins.patch
+Patch27:        azureus-SecureMessageServiceClientHelper-bcprov.patch
+Patch28:        azureus-configuration.patch
 Patch50:        azureus-4.0.0.4-boo-windows.diff
 Patch51:        azureus-4.0.0.4-boo-osx.diff
 Patch52:        azureus-4.0.0.4-screw-w32-tests.diff
@@ -44,70 +32,99 @@ Patch54:        azureus-4.0.0.4-screw-win32utils.diff
 Patch55:        azureus-4.0.0.4-oops-return.diff
 Patch56:        azureus-4.0.0.4-silly-java-tricks-are-for-kids.diff
 Patch57:        azureus-4.0.0.4-stupid-invalid-characters.diff
+Patch58:        azureus-4.2.0.4-java5.patch
+
+# Mandriva patches
+# (Anssi) Disable updates for core files, internal plugins, and plugins installed in /usr/share.
+# Also remove warning dialog about not being able to update plugins in /usr/share.
+# Note that plugins "azupdater" and "azupnpav" are automatically downloaded to user dir
+# if not already installed in /usr/share.
+Patch102:	vuze-disable-updates.patch
+# (Anssi) Do not try to install azupdater into /usr/share, put it in user directory instead.
+Patch103:	vuze-shared.patch
+# (Anssi) adapt for recent bouncycastle
+Patch104:	vuze-recent-bouncycastle.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 BuildRequires:  ant, jpackage-utils, xml-commons-apis
-BuildRequires:  jakarta-commons-cli, log4j
-BuildRequires:  libgconf-java
-BuildRequires:  bouncycastle
+BuildRequires:  jakarta-commons-cli
+%if %{mdkversion} >= 201000
+BuildRequires:  bouncycastle >= 1.43
+Requires:       bouncycastle >= 1.43
+%endif
 BuildRequires:  eclipse-swt
 BuildRequires:  junit
-BuildRequires:  glib-java-devel, libgtk-java-devel
 BuildRequires:  java-rpmbuild
-Requires:       jakarta-commons-cli, log4j
 Requires:	xulrunner
 Requires:       eclipse-swt
-Requires:       glib-java
-Requires:       libgconf-java
-Requires:       libgtk-java
-Requires:       bouncycastle
-Requires:	  java
-BuildRequires:    java-devel
+Requires:	  java >= 1.6
+Provides:	azureus = %{version}-%{release}
+Obsoletes:	azureus < %{version}-%{release}
 BuildRequires:    desktop-file-utils
-Requires(post):   desktop-file-utils
-Requires(postun): desktop-file-utils
 BuildArch:      noarch
 
-
 %description
-Azureus (now %{_newname}) implements the BitTorrent protocol using java
+Vuze (previously Azureus) implements the BitTorrent protocol using java
 and comes bundled with many invaluable features for both beginners and
 advanced users.
 
+If you need console or web ui support, you need to install package
+vuze-console.
+
+%package console
+Summary:	Console interface support for Vuze
+Group:		Networking/File transfer
+Requires:	%{name}
+Requires:	jakarta-commons-cli
+%if %{mdkversion} >= 201000
+BuildRequires:	liblog4j-java
+Requires:	liblog4j-java
+%else
+# package with more bloat
+BuildRequires:	log4j
+Requires:	log4j
+%endif
+
+%description console
+Console interface support for Vuze (previously Azureus) bittorrent
+client.
+
+You can run Vuze in console mode with command "azureus --ui=console" and
+in telnet mode with "azureus --ui=telnet".
+
 %prep
 %setup -q -c
-#%patch0 -p0
+
+cp %{SOURCE4} .
 %patch2 -p0
-%patch3 -p0
+%patch3 -p1 -b .remove-manifest-classpath
 %patch9 -p0
-#%patch12 -p0
-#%patch13 -p0
-%patch14 -p0
-%patch15 -p0
-#%patch16 -p0
-#%patch18 -p0
-#%patch19 -p0
-#%patch20 -p0
-#%patch22 -p0
-#%patch23 -p0
-%patch27 -p0
+%patch27 -p1 -b .nobcprov
 %patch28 -p0
-#%patch31 -p0
 #rm com/aelitis/azureus/core/update -rf
 #find ./ -name osx | xargs rm -r
 #find ./ -name macosx | xargs rm -r
 #find ./ -name win32 | xargs rm -r
 #find ./ -name Win32\* | xargs rm -r
 # Remove test code
-%patch50 -b .orig
-%patch51 -b .orig
+
+rm org/gudy/azureus2/platform/macosx/access/cocoa/CocoaJavaBridge.java
+rm org/gudy/azureus2/platform/macosx/PlatformManagerImpl.java
+rm org/gudy/azureus2/platform/win32/PlatformManagerImpl.java
+%patch50 -b .boo-windows
+
+rm org/gudy/azureus2/ui/swt/osx/CarbonUIEnhancer.java
+%patch51 -b .boo-osx
 %patch52 -b .orig
-%patch53 -b .orig
+%patch53 -p1 -b .boo-updating-w32
 %patch54 -b .orig
 %patch55 -b .orig
-%patch56 -b .orig
+%patch56 -p1 -b .silly-java-tricks-are-for-kids
 %patch57 -b .orig -p1
+
+%patch58 -p1 -b .java5
+
 rm org/gudy/azureus2/ui/swt/test/PrintTransferTypes.java
 #sed -i -e \
 #  "s|sun.security.action.GetPropertyAction|gnu.java.security.action.GetPropertyAction|" \
@@ -117,53 +134,42 @@ rm org/gudy/azureus2/ui/swt/test/PrintTransferTypes.java
 sed -i 's/\r//' ChangeLog.txt
 chmod 644 *.txt
 
+%if %{mdkversion} >= 201000
+# Mandriva: remove bouncycastle, use system one
+# but only on 2010.0+, as the previous releases had bloated bouncycastle packages
+rm -r org/bouncycastle
+%patch104 -p1
+%endif
+
+# Mandriva: remove core updaters
+rm org/gudy/azureus2/update/CorePatchChecker.java
+rm org/gudy/azureus2/update/CoreUpdateChecker.java
+rm org/gudy/azureus2/ui/swt/updater2/SWTUpdateChecker.java
+rm org/gudy/azureus2/ui/swt/updater2/PreUpdateChecker.java
+rm org/gudy/azureus2/platform/unix/PlatformManagerUnixPlugin.java
+rm org/gudy/azureus2/platform/PlatformManagerPluginDelegate.java
+%patch102 -p1
+%patch103 -p1
 
 %build
 mkdir -p build/libs
-build-jar-repository -p build/libs bcprov jakarta-commons-cli log4j \
-  gtk2.10 glib0.4 junit
-ln -s %{_libdir}/eclipse/swt.jar build/libs
+build-jar-repository -p build/libs jakarta-commons-cli log4j junit swt \
+%if %{mdkversion} >= 201000
+	bcprov
+%endif
 
 %ant jar
-
-#mkdir -p plugins/azplugins
-#pushd plugins
-#pushd azplugins
-#unzip -q %{SOURCE5}
-#rm -f *.jar `find ./ -name \*class`
-#find ./ -name \*java | xargs javac -cp %{_libdir}/eclipse/swt.jar:../..:.
-#find ./ -name \*java | xargs rm
-#jar cvf azplugins_2.1.6.jar .
-#popd
-#popd
-
-#unzip -q %{SOURCE6}
-#pushd plugins
-#pushd bdcc
-#unzip *.jar
-#rm -f *.jar `find ./ -name \*class`
-#find ./ -name \*java | xargs javac -cp %{_libdir}/eclipse/swt.jar:../..:.
-#find ./ -name \*java | xargs rm
-#jar cvf bdcc_2.2.2.jar .
-#popd
-#popd
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 install -dm 755 $RPM_BUILD_ROOT%{_datadir}/azureus/plugins
 install -pm 644 dist/Azureus2.jar $RPM_BUILD_ROOT%{_datadir}/azureus/Azureus2.jar
-# TODO: fix launcher to be multilib-safe
-install -p -D -m 0755 %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}/azureus
-sed --in-place "s:/usr/lib:%{_libdir}:g" $RPM_BUILD_ROOT%{_bindir}/azureus
 
-#install -dm 755 $RPM_BUILD_ROOT%{_datadir}/azureus/plugins/azplugins
-#install -pm 644 plugins/azplugins/azplugins_2.1.6.jar $RPM_BUILD_ROOT%{_datadir}/azureus/plugins/azplugins/azplugins_2.1.6.jar
-#install -pm 644 plugins/azplugins/plugin.properties $RPM_BUILD_ROOT%{_datadir}/azureus/plugins/azplugins/plugin.properties
+install -d -m755 %{buildroot}%{_bindir}
 
-#install -dm 755 $RPM_BUILD_ROOT%{_datadir}/azureus/plugins/bdcc
-#install -pm 644 plugins/bdcc/bdcc_2.2.2.jar $RPM_BUILD_ROOT%{_datadir}/azureus/plugins/bdcc/bdcc_2.2.2.jar
-#install -pm 644 plugins/bdcc/plugin.properties $RPM_BUILD_ROOT%{_datadir}/azureus/plugins/bdcc/plugin.properties
+sed 's,@LIB@,%{_lib},' %{SOURCE1} > %{buildroot}%{_bindir}/azureus
+chmod 0755 %{buildroot}%{_bindir}/azureus
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/pixmaps
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps
@@ -179,31 +185,31 @@ desktop-file-install \
 	--dir ${RPM_BUILD_ROOT}%{_datadir}/applications	\
 	%{SOURCE2}
 
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/application-registry
-install -m644 %{SOURCE3} $RPM_BUILD_ROOT%{_datadir}/application-registry
-
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%if %{mdkversion} < 200900
 %post
 %{update_desktop_database}
-%{update_mime_database}
 %update_icon_cache hicolor
+%update_menus
 
 %postun
 %{clean_desktop_database}
-%{clean_mime_database}
 %clean_icon_cache hicolor
+%clean_menus
+%endif
 
 %files
 %defattr(-,root,root)
-%doc ChangeLog.txt GPL.txt
+%doc ChangeLog.txt
 %{_datadir}/applications/*
-%{_datadir}/application-registry/*
 %{_datadir}/pixmaps/azureus.png
 %{_datadir}/icons/hicolor/16x16/apps/azureus.png
 %{_datadir}/icons/hicolor/32x32/apps/azureus.png
 %{_datadir}/icons/hicolor/64x64/apps/azureus.png
 %{_bindir}/azureus
 %{_datadir}/azureus
+
+%files console
+
