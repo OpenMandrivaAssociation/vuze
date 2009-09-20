@@ -1,7 +1,7 @@
 %define         _newname Vuze
 
 Name:		vuze
-Version:	4.2.0.4
+Version:	4.2.0.8
 Release:	%mkrel 1
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
@@ -14,8 +14,11 @@ Source0:	http://downloads.sourceforge.net/azureus/%{_newname}_%{version}_source.
 Source1:	azureus.startup.script
 Source2:	Azureus.desktop
 
+# replace RELEASE-4_2_0_4 below:
 # cvs -z3 -d:pserver:anonymous@azureus.cvs.sourceforge.net:/cvsroot/azureus co -p -r RELEASE-4_2_0_4 azureus2/build.xml > build.xml
 Source4:        build.xml
+# cvs -z3 -d:pserver:anonymous@azureus.cvs.sourceforge.net:/cvsroot/azureus co -p plugins/build.xml > build.plugins.xml
+Source5:	build.plugins.xml
 
 # Fedora patches
 Patch2:         azureus-cache-size.patch
@@ -24,13 +27,6 @@ Patch3:         azureus-remove-manifest-classpath.patch
 Patch9:         azureus-no-shared-plugins.patch
 Patch27:        azureus-SecureMessageServiceClientHelper-bcprov.patch
 Patch28:        azureus-configuration.patch
-Patch50:        azureus-4.0.0.4-boo-windows.diff
-Patch51:        azureus-4.0.0.4-boo-osx.diff
-Patch52:        azureus-4.0.0.4-screw-w32-tests.diff
-Patch53:        azureus-4.0.0.4-boo-updating-w32.diff
-Patch54:        azureus-4.0.0.4-screw-win32utils.diff
-Patch55:        azureus-4.0.0.4-oops-return.diff
-Patch56:        azureus-4.0.0.4-silly-java-tricks-are-for-kids.diff
 Patch57:        azureus-4.0.0.4-stupid-invalid-characters.diff
 Patch58:        azureus-4.2.0.4-java5.patch
 
@@ -44,6 +40,10 @@ Patch102:	vuze-disable-updates.patch
 Patch103:	vuze-shared.patch
 # (Anssi) adapt for recent bouncycastle
 Patch104:	vuze-recent-bouncycastle.patch
+# (Anssi) Same java5.patch above, but for plugins' build.xml
+Patch105:	vuze-plugins-build-remove-target.patch
+# (Anssi) Remove win32 and osx code:
+Patch106:	vuze-disable-win32-osx.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
@@ -63,13 +63,21 @@ Provides:	azureus = %{version}-%{release}
 Obsoletes:	azureus < %{version}-%{release}
 BuildRequires:    desktop-file-utils
 BuildArch:      noarch
+# Bundled in official package
+Suggests:	vuze-plugin-azplugins
+# Bundled in official package
+Suggests:	vuze-plugin-azrating
+# Bundled in official package + automatically installed by vuze on startup
+Suggests:	vuze-plugin-azupdater
+# Bundled in official package + automatically installed by vuze on startup
+Suggests:	vuze-plugin-azupnpav
 
 %description
 Vuze (previously Azureus) implements the BitTorrent protocol using java
 and comes bundled with many invaluable features for both beginners and
 advanced users.
 
-If you need console or web ui support, you need to install package
+If you need console or telnet support, you need to install package
 vuze-console.
 
 %package console
@@ -96,34 +104,17 @@ in telnet mode with "azureus --ui=telnet".
 %prep
 %setup -q -c
 
-cp %{SOURCE4} .
+cp %{SOURCE4} %{SOURCE5} .
 %patch2 -p0
 %patch3 -p1 -b .remove-manifest-classpath
 %patch9 -p0
 %patch27 -p1 -b .nobcprov
 %patch28 -p0
-#rm com/aelitis/azureus/core/update -rf
-#find ./ -name osx | xargs rm -r
-#find ./ -name macosx | xargs rm -r
-#find ./ -name win32 | xargs rm -r
-#find ./ -name Win32\* | xargs rm -r
-# Remove test code
 
-rm org/gudy/azureus2/platform/macosx/access/cocoa/CocoaJavaBridge.java
-rm org/gudy/azureus2/platform/macosx/PlatformManagerImpl.java
-rm org/gudy/azureus2/platform/win32/PlatformManagerImpl.java
-%patch50 -b .boo-windows
-
-rm org/gudy/azureus2/ui/swt/osx/CarbonUIEnhancer.java
-%patch51 -b .boo-osx
-%patch52 -b .orig
-%patch53 -p1 -b .boo-updating-w32
-%patch54 -b .orig
-%patch55 -b .orig
-%patch56 -p1 -b .silly-java-tricks-are-for-kids
 %patch57 -b .orig -p1
 
 %patch58 -p1 -b .java5
+%patch105 -p0
 
 rm org/gudy/azureus2/ui/swt/test/PrintTransferTypes.java
 #sed -i -e \
@@ -140,6 +131,15 @@ chmod 644 *.txt
 rm -r org/bouncycastle
 %patch104 -p1
 %endif
+
+# Mandriva: remove osx, win32 stuff
+rm -r com/aelitis/azureus/util/win32
+rm -r org/gudy/azureus2/ui/swt/osx
+rm -r org/gudy/azureus2/ui/swt/win32
+rm -r org/gudy/azureus2/platform/macosx
+rm -r org/gudy/azureus2/platform/win32
+rm org/gudy/azureus2/ui/swt/test/Win32TransferTypes.java
+%patch106 -p1
 
 # Mandriva: remove core updaters
 rm org/gudy/azureus2/update/CorePatchChecker.java
@@ -184,6 +184,9 @@ mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
 desktop-file-install \
 	--dir ${RPM_BUILD_ROOT}%{_datadir}/applications	\
 	%{SOURCE2}
+
+# build.xml for building plugins
+install -m644 build.plugins.xml %{buildroot}%{_datadir}/azureus
 
 %clean
 rm -rf $RPM_BUILD_ROOT
