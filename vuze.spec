@@ -168,8 +168,7 @@ install -pm 644 dist/Azureus2.jar $RPM_BUILD_ROOT%{_datadir}/azureus/Azureus2.ja
 
 install -d -m755 %{buildroot}%{_bindir}
 
-sed 's,@LIB@,%{_lib},' %{SOURCE1} > %{buildroot}%{_bindir}/azureus
-chmod 0755 %{buildroot}%{_bindir}/azureus
+install -m755 %{SOURCE1} %{buildroot}%{_bindir}/azureus
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/pixmaps
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps
