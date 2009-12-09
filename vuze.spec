@@ -1,8 +1,8 @@
 %define         _newname Vuze
 
 Name:		vuze
-Version:	4.2.0.8
-Release:	%mkrel 2
+Version:	4.3.0.4
+Release:	%mkrel 1
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
 License:	GPLv2+
@@ -42,7 +42,7 @@ Patch103:	vuze-shared.patch
 Patch104:	vuze-recent-bouncycastle.patch
 # (Anssi) Same java5.patch above, but for plugins' build.xml
 Patch105:	vuze-plugins-build-remove-target.patch
-# (Anssi) Remove win32 and osx code:
+# (Anssi) Remove win32 and osx code to fix build:
 Patch106:	vuze-disable-win32-osx.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -133,6 +133,7 @@ rm -r org/bouncycastle
 %endif
 
 # Mandriva: remove osx, win32 stuff
+# build fails when they are present
 rm -r com/aelitis/azureus/util/win32
 rm -r org/gudy/azureus2/ui/swt/osx
 rm -r org/gudy/azureus2/ui/swt/win32
@@ -169,6 +170,8 @@ install -pm 644 dist/Azureus2.jar $RPM_BUILD_ROOT%{_datadir}/azureus/Azureus2.ja
 install -d -m755 %{buildroot}%{_bindir}
 
 install -m755 %{SOURCE1} %{buildroot}%{_bindir}/azureus
+# link as per upstream
+ln -s azureus %{buildroot}%{_bindir}/vuze
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/pixmaps
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/16x16/apps
@@ -211,6 +214,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/icons/hicolor/32x32/apps/azureus.png
 %{_datadir}/icons/hicolor/64x64/apps/azureus.png
 %{_bindir}/azureus
+%{_bindir}/vuze
 %{_datadir}/azureus
 
 %files console
