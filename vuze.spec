@@ -2,7 +2,7 @@
 
 Name:		vuze
 Version:	4.3.0.4
-Release:	%mkrel 1
+Release:	%mkrel 2
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
 License:	GPLv2+
