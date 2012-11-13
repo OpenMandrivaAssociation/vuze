@@ -1,0 +1,13 @@
+Index: vuze-shared/org/gudy/azureus2/update/UpdaterUtils.java
+===================================================================
+--- vuze-shared/org/gudy/azureus2/update/UpdaterUtils.java
++++ vuze-shared/org/gudy/azureus2/update/UpdaterUtils.java	2009-08-18 21:24:39.537934290 +0300
+@@ -82,7 +82,7 @@
+ 	checkBootstrapPlugins() 
+ 	{
+ 		try{
+-			File	target_props = getPropsIfNotPresent( AZUPDATER_PLUGIN_ID, true );
++			File	target_props = getPropsIfNotPresent( AZUPDATER_PLUGIN_ID, false );
+ 			
+ 			if ( target_props != null ){
+ 				

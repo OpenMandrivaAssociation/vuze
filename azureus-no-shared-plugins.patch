@@ -1,0 +1,30 @@
+--- org/gudy/azureus2/ui/swt/pluginsinstaller/IPWListPanel.java	2006-02-08 17:17:47.000000000 -0500
++++ org/gudy/azureus2/ui/swt/pluginsinstaller/IPWListPanel.java.orig	2005-12-13 02:37:15.000000000 -0500
+@@ -237,14 +237,14 @@
+   	}
+   
+ 	public boolean 
+-	isNextEnabled() 
++	isFinishEnabled()
+ 	{
+ 		return(((InstallPluginWizard)wizard).getPluginList().size() > 0 );
+ 	}
+ 	
+-  public IWizardPanel getNextPanel() {
+-    return new IPWInstallModePanel(wizard,this);
+-  }
++ 	public IWizardPanel getFinishPanel() {
++ 	    return new IPWFinishPanel(wizard,this);
++	}
+ 	
+   public void updateList() {
+     ArrayList list = new ArrayList();
+@@ -255,7 +255,7 @@
+       }
+     }
+     ((InstallPluginWizard)wizard).setPluginList(list);
++    ((InstallPluginWizard)wizard).setFinishEnabled( isFinishEnabled() );
+-    ((InstallPluginWizard)wizard).setNextEnabled( isNextEnabled() );
+     
+   }
+ }

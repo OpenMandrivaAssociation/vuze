@@ -1,0 +1,29 @@
+Index: vuze-bc/com/aelitis/azureus/core/security/impl/CryptoSTSEngineImpl.java
+===================================================================
+--- vuze-bc/com/aelitis/azureus/core/security/impl/CryptoSTSEngineImpl.java
++++ vuze-bc/com/aelitis/azureus/core/security/impl/CryptoSTSEngineImpl.java	2009-08-19 03:58:34.385684044 +0300
+@@ -32,7 +32,7 @@
+ import java.security.SecureRandom;
+ import java.security.Signature;
+ 
+-import org.bouncycastle.jce.provider.JCEECDHKeyAgreement;
++import org.bouncycastle.jce.provider.asymmetric.ec.KeyAgreement;
+ 
+ import com.aelitis.azureus.core.security.CryptoECCUtils;
+ import com.aelitis.azureus.core.security.CryptoManagerException;
+@@ -404,7 +404,7 @@
+ 	
+ 	class 
+ 	InternalDH 
+-		extends JCEECDHKeyAgreement.DH
++		extends KeyAgreement.DH
+ 	{
+ 			// we use this class to obtain compatability with BC
+ 		
+@@ -435,4 +435,4 @@
+ 			return( engineGenerateSecret());
+ 		}
+ 	}
+-}
+\ Ei rivinvaihtoa tiedoston lopussa
++}
