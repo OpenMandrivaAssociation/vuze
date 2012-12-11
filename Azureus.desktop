@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Vuze
+GenericName=BitTorrent Client
+Exec=azureus
+Icon=azureus
+Terminal=false
+Type=Application
+MimeType=application/x-bittorrent
+Categories=Application;Network;FileTransfer;P2P;GTK;Java;
+

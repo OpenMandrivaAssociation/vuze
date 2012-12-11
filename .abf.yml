@@ -1,6 +1,2 @@
 sources:
-  "Azureus.desktop:"	968c67808b919a24f616d6dbe913e3df293c9771
-  "azureus.startup.script:"	b6a1668d83bd2331480e966951da696cb106ea73
-  "build.plugins.xml:"	b82dcdc0b8862bd3aa8c70b8fbc55bccda7bc1d7
-  "build.xml:"	37be9aed08dd2393a2816973733b6a9472135df7
-  "Vuze_4.3.0.4_source.zip:"	5c977f5499bf0b3a73f39e3dc449c45f7aa11b02
+  "Vuze_4.3.0.4_source.zip": 5c977f5499bf0b3a73f39e3dc449c45f7aa11b02

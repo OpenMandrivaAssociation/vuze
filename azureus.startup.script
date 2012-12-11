@@ -1,0 +1,71 @@
+#!/bin/sh
+
+# Mandriva Vuze startup script
+
+# Script version exported to azureus
+# (match original startup script version and features) 
+SCRIPT_VERSION=2
+
+# Set maximum heap size
+JAVA_ARGS="-Xmx128m"
+
+SYSTEM64=
+[ "$(uname -m)" = "x86_64" ] && SYSTEM64=1
+
+# Find latest version of GRE for embedded browser
+BESTVER=0
+GRE_PATH=
+for GRE in /etc/gre.d/*.system.conf; do
+	[ -r "$GRE" ] || continue
+
+	BROWSER64=
+	[ "$GRE" != "${GRE%-64.system.conf}" ] && BROWSER64=1
+	[ "$SYSTEM64" = "$BROWSER64" ] || continue
+
+	# hack to get integer version for GRE
+	VER=$(awk -F . '/^\[.+\]$/ { sub("^\\[", ""); sub("]\\$", ""); for (i = NF; i > 0; i--) value += $i * 100^(NF-i); print value; exit }' $GRE)
+	if [ $VER -gt $BESTVER ]; then
+		eval $(grep '^GRE_PATH=' $GRE)
+		BESTVER=$VER
+	fi
+done
+if [ -n "$GRE_PATH" ]; then
+	export MOZILLA_FIVE_HOME=$GRE_PATH
+	export LD_LIBRARY_PATH=$GRE_PATH:$LD_LIBRARY_PATH
+fi
+
+# Common allows user to select ui (--ui=swt,telnet,console) but requires
+# that log4j and jakarta-commons-cli exist.
+UI="common"
+
+. /usr/share/java-utils/java-functions
+set_jvm
+set_flags
+set_options $JAVA_ARGS -Dazureus.install.path=/usr/share/azureus -Dazureus.script.version=$SCRIPT_VERSION -Dazureus.script=$0
+# jakarta-commons-cli and log4j are optional (for --ui=console)
+set_classpath jakarta-commons-cli log4j bcprov swt 2>/dev/null
+# force swt ui if log4j or jakarta-commons-cli is not installed
+if ! echo $CLASSPATH | grep -q 'jakarta-commons-cli.*log4j'; then
+	UI="swt"
+	if [ "$*" != "${*#*--ui}" ]; then
+		# This catches only the most common case
+		echo "You need to install vuze-console package for --ui to work!" >&2
+		exit 1
+	fi
+fi
+export CLASSPATH=/usr/share/azureus/Azureus2.jar:$CLASSPATH
+set_javacmd
+
+# for run_script
+mkdir -p ~/.azureus
+
+run_script() {
+	$JAVACMD $FLAGS $OPTIONS "$@" > ~/.azureus/azScript
+	. ~/.azureus/azScript
+	rm -f ~/.azureus/azScript
+}
+
+run_script "org.gudy.azureus2.platform.unix.ScriptBeforeStartup" "$@"
+$JAVACMD $FLAGS $OPTIONS "org.gudy.azureus2.ui.$UI.Main" "$@"
+run_script "org.gudy.azureus2.platform.unix.ScriptAfterShutdown" "$@"
+

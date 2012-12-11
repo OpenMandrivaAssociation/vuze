@@ -2,7 +2,7 @@
 
 Name:		vuze
 Version:	4.3.0.4
-Release:	%mkrel 2
+Release:	3
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
 License:	GPLv2+
@@ -49,10 +49,8 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 BuildRequires:  ant, jpackage-utils, xml-commons-apis
 BuildRequires:  jakarta-commons-cli
-%if %{mdkversion} >= 201000
 BuildRequires:  bouncycastle >= 1.43
 Requires:       bouncycastle >= 1.43
-%endif
 BuildRequires:  eclipse-swt
 BuildRequires:  junit
 BuildRequires:  java-rpmbuild
@@ -62,6 +60,7 @@ Requires:	  java >= 1.6
 Provides:	azureus = %{version}-%{release}
 Obsoletes:	azureus < %{version}-%{release}
 BuildRequires:    desktop-file-utils
+BuildRequires:  locales-en
 BuildArch:      noarch
 # Bundled in official package
 Suggests:	vuze-plugin-azplugins
@@ -85,14 +84,8 @@ Summary:	Console interface support for Vuze
 Group:		Networking/File transfer
 Requires:	%{name}
 Requires:	jakarta-commons-cli
-%if %{mdkversion} >= 201000
 BuildRequires:	liblog4j-java
 Requires:	liblog4j-java
-%else
-# package with more bloat
-BuildRequires:	log4j
-Requires:	log4j
-%endif
 
 %description console
 Console interface support for Vuze (previously Azureus) bittorrent
@@ -125,12 +118,10 @@ rm org/gudy/azureus2/ui/swt/test/PrintTransferTypes.java
 sed -i 's/\r//' ChangeLog.txt
 chmod 644 *.txt
 
-%if %{mdkversion} >= 201000
 # Mandriva: remove bouncycastle, use system one
 # but only on 2010.0+, as the previous releases had bloated bouncycastle packages
 rm -r org/bouncycastle
 %patch104 -p1
-%endif
 
 # Mandriva: remove osx, win32 stuff
 # build fails when they are present
@@ -153,17 +144,14 @@ rm org/gudy/azureus2/platform/PlatformManagerPluginDelegate.java
 %patch103 -p1
 
 %build
+export LC_ALL=ISO-8859-1
 mkdir -p build/libs
 build-jar-repository -p build/libs jakarta-commons-cli log4j junit swt \
-%if %{mdkversion} >= 201000
 	bcprov
-%endif
 
 %ant jar
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
 install -dm 755 $RPM_BUILD_ROOT%{_datadir}/azureus/plugins
 install -pm 644 dist/Azureus2.jar $RPM_BUILD_ROOT%{_datadir}/azureus/Azureus2.jar
 
@@ -218,4 +206,92 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/azureus
 
 %files console
+
+
+
+%changelog
+* Wed Dec 08 2010 Oden Eriksson <oeriksson@mandriva.com> 4.3.0.4-2mdv2011.0
++ Revision: 615414
+- the mass rebuild of 2010.1 packages
+
+* Wed Dec 09 2009 Anssi Hannula <anssi@mandriva.org> 4.3.0.4-1mdv2010.1
++ Revision: 475274
+- new version 4.3.0.4
+- create a vuze symlink for azureus binary as per upstream
+- rediff patches disable-updates.patch, disable-win32-osx.patch
+
+* Sun Oct 04 2009 Anssi Hannula <anssi@mandriva.org> 4.2.0.8-2mdv2010.0
++ Revision: 453371
+- fix gre selection in startup script
+
+* Sun Sep 20 2009 Anssi Hannula <anssi@mandriva.org> 4.2.0.8-1mdv2010.0
++ Revision: 445553
+- new version 4.2.0.8
+- provide build.plugins.xml for building plugins
+- replace fedora win32/osx removal patches with cleaner versions
+- suggest plugin packages that are bundled in the official upstream
+  installation package
+- fix vuze-console description
+
+* Wed Aug 19 2009 Anssi Hannula <anssi@mandriva.org> 4.2.0.4-1mdv2010.0
++ Revision: 417918
+- new version
+- provide a new rewritten startup script
+  o adds support for passing commands to already active instance
+  o adds support for --ui option when necessary packages are installed
+    (see below)
+  o selects correct GRE for browser embedding depending on arch and the
+    GRE version numbers (fixes bug #44008)
+  o fixes loading of SWT, fixing vuze startup (fixes bug #42756)
+  o use -Xmx128m option with java for now (as per upstream)
+  o dropped symlink hacks, now using vuze's own support for separated
+    system-wide plugins and user plugins
+- drop custom applications-registry entry, unneeded
+- clean .spec
+- remove patches that were not applied
+- remove fedora update manager removal patches
+- add java5.patch from fedora (build for target 1.5)
+- update other fedora patches
+- disable updates for core, internal plugins, and system-wide plugins
+  (disable-updates.patch, fixes bug #46219); user-installed plugins will
+  be updated, however, and plugins can be installed directly from the
+  Tools menu, as with official build
+- do not try to install azupdater as a system-wide plugin (shared.patch)
+- fix build with recent bouncycastle (recent-bouncycastle.patch)
+- drop requires on java gtk stuff, they were unneeded
+- split console support into vuze-console subpackage; that package will
+  be empty but it requires the extra packages that are needed for
+  console/telnet support
+- really use system bouncycastle
+- on 2009.1 and older, keep using internal bouncycastle as bouncycastle
+  packages on those releases were bloated
+- drop unneeded %%post and %%postun on 2009.0+
+- use liblog4j-java packages instead of log4j on cooker in order to
+  reduce unneeded dependencies
+
+* Sun Mar 15 2009 Olivier Blin <oblin@mandriva.com> 4.0.0.4-2mdv2009.1
++ Revision: 355338
+- add glib-java and libgtk-java as Requires (and remove them from BuildRequires, their devel counterpart is already BuildRequired)
+- fix typo in BuildRequires
+
+  + Jérôme Soyer <saispo@mandriva.org>
+    - Fix launch script
+
+* Thu Mar 05 2009 Jérôme Soyer <saispo@mandriva.org> 4.0.0.4-1mdv2009.1
++ Revision: 348975
+- Add BR
+- Remove gcj support
+- New upstream release
+
+* Wed Aug 13 2008 Alexander Kurtakov <akurtakov@mandriva.org> 0:3.1.1.0-0.0.1mdv2009.0
++ Revision: 271410
+- direct symlink to swt.jar
+- replace swt-gtk with swt everywhere
+- fix startup script
+- fix build
+
+  + David Walluck <walluck@mandriva.org>
+    - fix build with eclipse-swt
+    - import vuze
+
 
