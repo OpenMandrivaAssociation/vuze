@@ -1,0 +1,33 @@
+--- Vuze_5400_source/com/aelitis/azureus/util/ImportExportUtils.java	2012-07-12 22:37:36.000000000 +0200
++++ Vuze_5400_source/com/aelitis/azureus/util/ImportExportUtils.java.david.david	2014-08-15 20:42:39.099056481 +0200
+@@ -360,7 +360,7 @@
+ 	
+ 		throws IOException
+ 	{
+-		List	l = new JSONArray(data.length);
++		List	l = new JSONArray();
+ 		
+ 		map.put( key, l );
+ 		
+--- Vuze_5400_source/com/aelitis/azureus/util/JSONUtils.java	2013-11-26 22:05:34.000000000 +0100
++++ Vuze_5400_source/com/aelitis/azureus/util/JSONUtils.java.david.david	2014-08-15 20:44:53.706164352 +0200
+@@ -105,9 +105,7 @@
+ 	 */
+ 	public static String encodeToJSON(Map map) {
+ 		JSONObject jobj = encodeToJSONObject(map);		
+-		StringBuilder	sb = new StringBuilder(8192);
+-		jobj.toString( sb );
+-		return( sb.toString());
++		return( jobj.toString());
+ 	}
+ 
+ 	public static String encodeToJSON(Collection list) {
+@@ -138,7 +136,7 @@
+ 	 * @since 3.0.1.5
+ 	 */
+ 	private static JSONArray encodeToJSONArray(Collection list) {
+-		JSONArray newList = new JSONArray(list.size());
++		JSONArray newList = new JSONArray();
+ 
+ 		for ( Object value: list ){
+ 

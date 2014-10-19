@@ -1,0 +1,189 @@
+--- Vuze_5400_source/com/aelitis/azureus/core/security/impl/CryptoHandlerECC.java	2012-07-12 22:36:34.000000000 +0200
++++ Vuze_5400_source/com/aelitis/azureus/core/security/impl/CryptoHandlerECC.java.david.david	2014-08-15 20:54:59.000000000 +0200
+@@ -29,6 +29,7 @@
+ import java.security.PrivateKey;
+ import java.security.PublicKey;
+ import java.security.SecureRandom;
++import java.security.Security;
+ import java.security.Signature;
+ import java.security.spec.AlgorithmParameterSpec;
+ import java.util.Arrays;
+@@ -37,9 +38,10 @@
+ import javax.crypto.Cipher;
+ import javax.crypto.IllegalBlockSizeException;
+ 
+-import org.bouncycastle.jce.provider.JCEIESCipher;
++import org.bouncycastle.jce.provider.BouncyCastleProvider;
+ import org.bouncycastle.jce.spec.IEKeySpec;
+ import org.bouncycastle.jce.spec.IESParameterSpec;
++
+ import org.gudy.azureus2.core3.config.COConfigurationManager;
+ import org.gudy.azureus2.core3.util.Base32;
+ import org.gudy.azureus2.core3.util.Debug;
+@@ -79,7 +81,9 @@
+ 		CryptoManagerImpl		_manager,
+ 		int						_instance_id )
+ 	{
+-		manager	= _manager;
++		Security.addProvider(new BouncyCastleProvider());
++
++	        manager	= _manager;
+ 		
+ 		CONFIG_PREFIX += _instance_id + ".";
+ 		
+@@ -225,11 +229,11 @@
+ 			
+ 			IESParameterSpec param = new IESParameterSpec( d, e, 128);
+ 		
+-			InternalECIES	cipher = new InternalECIES();
++			Cipher cipher = Cipher.getInstance("ECIES");
+ 	
+-			cipher.internalEngineInit( Cipher.ENCRYPT_MODE, key_spec, param, null ); 
++			cipher.init( Cipher.ENCRYPT_MODE, key_spec, param, null ); 
+ 		
+-			byte[]	encrypted = cipher.internalEngineDoFinal(data, 0, data.length );
++			byte[]	encrypted = cipher.doFinal(data, 0, data.length );
+ 			
+ 			byte[] result = new byte[32+encrypted.length];
+ 			
+@@ -268,12 +272,11 @@
+ 			
+ 			IESParameterSpec param = new IESParameterSpec( d, e, 128);
+ 		
+-			InternalECIES	cipher = new InternalECIES();
+-	
+-			cipher.internalEngineInit( Cipher.DECRYPT_MODE, key_spec, param, null ); 
+-		
+-			return( cipher.internalEngineDoFinal( data, 32, data.length - 32 ));
+-			
++			Cipher cipher = Cipher.getInstance("ECIES");
++
++			cipher.init( Cipher.DECRYPT_MODE, key_spec, param, null ); 
++
++			return( cipher.doFinal( data, 32, data.length - 32 ));
+ 		}catch( CryptoManagerException e ){
+ 			
+ 			throw( e );
+@@ -860,32 +863,4 @@
+ 		return((int)COConfigurationManager.getIntParameter( CONFIG_PREFIX + "pwtype", CryptoManagerPasswordHandler.HANDLER_TYPE_USER ));
+ 	}
+ 	
+-	class InternalECIES 
+-		extends JCEIESCipher.ECIES
+-	{
+-			// we use this class to obtain compatability with BC
+-
+-		public void 
+-		internalEngineInit(
+-			int                     opmode,
+-			Key                     key,
+-			AlgorithmParameterSpec  params,
+-			SecureRandom            random ) 
+-		
+-			throws InvalidKeyException, InvalidAlgorithmParameterException
+-		{
+-			engineInit(opmode, key, params, random);
+-		}
+-
+-		protected byte[] 
+-		internalEngineDoFinal(
+-			byte[]  input,
+-			int     inputOffset,
+-			int     inputLen ) 
+-		
+-			throws IllegalBlockSizeException, BadPaddingException
+-		{
+-			return engineDoFinal(input, inputOffset, inputLen);
+-		}
+-	}
+ }
+--- Vuze_5400_source/com/aelitis/azureus/core/security/impl/CryptoSTSEngineImpl.java	2013-05-08 22:11:40.000000000 +0200
++++ Vuze_5400_source/com/aelitis/azureus/core/security/impl/CryptoSTSEngineImpl.java.david.david	2014-08-15 20:54:59.000000000 +0200
+@@ -30,10 +30,12 @@
+ import java.security.PrivateKey;
+ import java.security.PublicKey;
+ import java.security.SecureRandom;
++import java.security.Security;
+ import java.security.Signature;
+ 
++import javax.crypto.KeyAgreement;
++
+ import org.bouncycastle.jce.provider.BouncyCastleProvider;
+-import org.bouncycastle.jce.provider.JCEECDHKeyAgreement;
+ 
+ import com.aelitis.azureus.core.security.CryptoECCUtils;
+ import com.aelitis.azureus.core.security.CryptoManagerException;
+@@ -57,7 +59,7 @@
+ 	private PublicKey 	remotePubKey;
+ 	private byte[] 		sharedSecret;
+ 	
+-	private InternalDH	ecDH;
++        private KeyAgreement	ecDH;
+ 	
+ 	/**
+ 	 * 
+@@ -76,9 +78,9 @@
+ 		ephemeralKeyPair = CryptoECCUtils.createKeys();
+ 		
+ 		try{
+-			ecDH = new InternalDH();
+-			
+-			//ecDH = KeyAgreement.getInstance("ECDH", BouncyCastleProvider.PROVIDER_NAME);
++		        Security.addProvider(new BouncyCastleProvider());
++
++			ecDH = KeyAgreement.getInstance("ECDH");
+ 			
+ 			ecDH.init(ephemeralKeyPair.getPrivate());
+ 			
+@@ -402,38 +404,4 @@
+ 			throw( new CryptoManagerException( "Failed to put byte[]", e ));
+ 		}
+ 	}
+-	
+-	class 
+-	InternalDH 
+-		extends JCEECDHKeyAgreement.DH
+-	{
+-			// we use this class to obtain compatability with BC
+-		
+-		public void
+-		init(
+-			Key		key )
+-
+-			throws InvalidKeyException, InvalidAlgorithmParameterException
+-		{
+-			engineInit( key, null );
+-		}
+-
+-		public Key
+-		doPhase(
+-			Key		key,
+-			boolean	lastPhase )
+-
+-			throws InvalidKeyException, IllegalStateException
+-		{
+-			return( engineDoPhase( key, lastPhase ));
+-		}
+-
+-		public byte[] 
+-		generateSecret() 
+-		
+-			throws IllegalStateException
+-		{
+-			return( engineGenerateSecret());
+-		}
+-	}
+-}
+\ No newline at end of file
++}
+--- Vuze_5400_source/org/gudy/azureus2/core3/security/impl/SESecurityManagerBC.java	2013-08-13 17:32:46.000000000 +0200
++++ Vuze_5400_source/org/gudy/azureus2/core3/security/impl/SESecurityManagerBC.java.david.david	2014-08-15 20:54:59.000000000 +0200
+@@ -39,6 +39,7 @@
+ import org.bouncycastle.jce.*;
+ import org.bouncycastle.jce.provider.BouncyCastleProvider;
+ import org.bouncycastle.asn1.x509.X509Name;
++import org.bouncycastle.x509.X509V3CertificateGenerator;
+ import org.gudy.azureus2.core3.util.Constants;
+ import org.gudy.azureus2.core3.util.Debug;
+ import org.gudy.azureus2.core3.util.RandomUtils;
+ 

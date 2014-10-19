@@ -1,0 +1,20 @@
+diff -up Vuze_5300_source/org/gudy/azureus2/ui/swt/pluginsinstaller/IPWListPanel.java Vuze_5300_source/org/gudy/azureus2/ui/swt/pluginsinstaller/IPWListPanel.java.david.david
+--- Vuze_5300_source/org/gudy/azureus2/ui/swt/pluginsinstaller/IPWListPanel.java	2013-02-15 22:09:54.000000000 +0100
++++ Vuze_5300_source/org/gudy/azureus2/ui/swt/pluginsinstaller/IPWListPanel.java.david.david	2014-03-01 14:49:59.127523479 +0100
+@@ -234,13 +234,13 @@ public class IPWListPanel extends Abstra
+   	}
+   
+ 	public boolean 
+-	isNextEnabled() 
++	isFinishEnabled() 
+ 	{
+ 		return(((InstallPluginWizard)wizard).getPluginList().size() > 0 );
+ 	}
+ 	
+-  public IWizardPanel<InstallPluginWizard> getNextPanel() {
+-    return new IPWInstallModePanel(wizard,this);
++  public IWizardPanel<InstallPluginWizard> getFinishPanel() {
++    return new IPWFinishPanel(wizard,this);
+   }
+ 	
+   public void updateList() {
