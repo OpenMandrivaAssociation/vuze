@@ -3,7 +3,7 @@
 
 Name:		vuze
 Version:	5.4.0.0
-Release:	1
+Release:	1.1
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
 License:	GPLv2
@@ -43,7 +43,7 @@ Requires:	apache-commons-cli
 Requires:	bouncycastle >= 1.33-3
 Requires:	eclipse-swt >= 3.5
 Requires:	log4j
-Requires:	java >= 1.7.0
+Requires:	java >= 1.8.0
 
 Provides:	vuze = %{version}-%{release}
 
