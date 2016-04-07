@@ -1,9 +1,9 @@
 %define	pkgname		Vuze
-%define	pkgversion	5400
+%define	pkgversion	5710
 
 Name:		vuze
-Version:	5.4.0.0
-Release:	1.1
+Version:	5.7.1.0
+Release:	1
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
 License:	GPLv2
@@ -18,11 +18,11 @@ Patch0:		azureus-5.3.0.0-mga-cache-size.patch
 Patch1:		azureus-5.3.0.0-mga-remove-manifest-classpath.patch
 Patch2:		azureus-5.3.0.0-mga-no-shared-plugins.patch
 Patch3:		azureus-5.3.0.0-mga-SecureMessageServiceClientHelper-bcprov.patch
-Patch4:		azureus-5.3.0.0-mga-boo-osx.patch
+Patch4:		azureus-5.7.0.0-mga-boo-osx.patch
 Patch5:		azureus-5.3.0.0-mga-boo-updating-w32.patch
-Patch6:		azureus-5.3.0.0-mga-stupid-invalid-characters.patch
+Patch6:		azureus-5.6.1.2-mga-stupid-invalid-characters.patch
 Patch7:		azureus-5.3.0.0-mga-java5.patch
-Patch8:		azureus-5.3.0.0-mga-no-bundled-apache-commons.patch
+Patch8:		azureus-5.6.1.2-mga-no-bundled-apache-commons.patch
 Patch9:		azureus-5.4.0.0-mga-no-bundled-json.patch
 Patch10:	azureus-5.4.0.0-mga-no-bundled-bouncycastle.patch
 BuildArch:	noarch
