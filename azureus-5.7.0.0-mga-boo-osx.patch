@@ -1,6 +1,7 @@
---- Vuze_5300_source/org/gudy/azureus2/ui/swt/mainwindow/SWTThread.java	2013-11-26 22:04:52.000000000 +0100
-+++ Vuze_5300_source/org/gudy/azureus2/ui/swt/mainwindow/SWTThread.java.david.david	2014-03-01 15:03:40.339895348 +0100
-@@ -229,57 +229,6 @@ public class SWTThread {
+diff -Nru Vuze_5700_source/org/gudy/azureus2/ui/swt/mainwindow/SWTThread.java Vuze_5700_source/org/gudy/azureus2/ui/swt/mainwindow/SWTThread.java.daviddavid
+--- Vuze_5700_source/org/gudy/azureus2/ui/swt/mainwindow/SWTThread.java	2015-11-06 23:04:34.000000000 +0100
++++ Vuze_5700_source/org/gudy/azureus2/ui/swt/mainwindow/SWTThread.java.daviddavid	2015-11-16 09:34:12.485713620 +0100
+@@ -226,66 +226,6 @@
  			}
  		});
  
@@ -10,7 +11,10 @@
 -			// platforms send this.
 -			display.addListener(SWT.Close, new Listener() {
 -				public void handleEvent(Event event) {
--					event.doit = UIFunctionsManager.getUIFunctions().dispose(false, false);
+-					UIFunctions uiFunctions = UIFunctionsManager.getUIFunctions();
+-					if (uiFunctions != null) {
+-						event.doit = uiFunctions.dispose(false, false);
+-					}
 -				}
 -			});
 -
@@ -47,6 +51,12 @@
 -					if (mHookDocOpen != null) {
 -						mHookDocOpen.invoke(claObj, new Object[0]);
 -					}
+-					
+-					Method mIsRetinaDisplay = claObj.getClass().getMethod("isRetinaDisplay");
+-					if (mIsRetinaDisplay != null) {
+-						isRetinaDisplay = (Boolean) mIsRetinaDisplay.invoke(claObj);
+-					}
+-
 -					
 -				} catch (Throwable e) {
 -
