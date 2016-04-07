@@ -35,14 +35,14 @@ BuildRequires:	eclipse-swt >= 3.5
 BuildRequires:	java-devel >= 1.7.0
 BuildRequires:	jpackage-utils >= 1.5
 BuildRequires:	junit
-BuildRequires:	log4j
+BuildRequires:	log4j12
 BuildRequires:	xml-commons-apis
 BuildRequires:	desktop-file-utils
 
 Requires:	apache-commons-cli
 Requires:	bouncycastle >= 1.33-3
 Requires:	eclipse-swt >= 3.5
-Requires:	log4j
+Requires:	log4j12
 Requires:	java >= 1.8.0
 
 Provides:	vuze = %{version}-%{release}
@@ -75,7 +75,7 @@ chmod 644 *.txt
 
 %build
 mkdir -p build/libs
-build-jar-repository -p build/libs bcprov apache-commons-cli log4j \
+build-jar-repository -p build/libs bcprov apache-commons-cli log4j-1.2.17 \
 	junit apache-commons-lang
 
 #ppc seems to have eclipse-swt.ppc64 installed so libdir can't be used
