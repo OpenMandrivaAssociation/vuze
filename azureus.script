@@ -20,6 +20,9 @@ SCRIPT_VERSION=2
 
 #popd > /dev/null 2>&1
 
+# needs gtk2
+export SWT_GTK3=0
+
 case $(uname -i) in
         *64)
                 SWT=/usr/lib64/eclipse/swt.jar
@@ -30,4 +33,4 @@ case $(uname -i) in
 		LIBDIR=/usr/lib
                 ;;
 esac
-JAVA_HOME=/usr/lib/jvm/java-openjdk LD_LIBRARY_PATH=$LIBDIR/eclipse/plugins/:$LIBDIR/eclipse/:$LIBDIR CLASSPATH=$SWT:`build-classpath bcprov apache-commons-cli log4j-1.2.17`:/usr/share/java/azureus/Azureus2.jar java -Dazureus.install.path=$APPDIR -Dazureus.script.version=$SCRIPT_VERSION -Dazureus.script=$0 -Dorg.eclipse.swt.browser.UseWebKitGTK=true org.gudy.azureus2.ui.swt.Main "$@"
+JAVA_HOME=/usr/lib/jvm/java-openjdk LD_LIBRARY_PATH=$LIBDIR/eclipse/plugins/:$LIBDIR/eclipse/:$LIBDIR CLASSPATH=$SWT:`build-classpath bcprov apache-commons-cli log4j-1.2.17`:/usr/share/java/azureus/Azureus2.jar java -Dazureus.install.path=$APPDIR -Dazureus.script.version=$SCRIPT_VERSION -Dazureus.script=$0 -Dorg.eclipse.swt.browser.UseWebKitGTK=true -Dazureus.skipSWTcheck=1 org.gudy.azureus2.ui.swt.Main "$@"

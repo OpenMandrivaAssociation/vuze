@@ -3,7 +3,7 @@
 
 Name:		vuze
 Version:	5.7.1.0
-Release:	1
+Release:	2
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
 License:	GPLv2
@@ -25,6 +25,7 @@ Patch7:		azureus-5.3.0.0-mga-java5.patch
 Patch8:		azureus-5.6.1.2-mga-no-bundled-apache-commons.patch
 Patch9:		azureus-5.4.0.0-mga-no-bundled-json.patch
 Patch10:	azureus-5.4.0.0-mga-no-bundled-bouncycastle.patch
+Patch11:	azureus-5.3.0.0-disable-updaters.patch
 BuildArch:	noarch
 
 BuildRequires:	ant
