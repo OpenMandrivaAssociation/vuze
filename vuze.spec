@@ -58,7 +58,7 @@ advanced users.
 
 cp %{SOURCE4} .
 
-%apply_patches
+%autopatch -p1
 
 rm org/gudy/azureus2/ui/swt/osx/CarbonUIEnhancer.java
 rm org/gudy/azureus2/ui/swt/osx/Start.java
