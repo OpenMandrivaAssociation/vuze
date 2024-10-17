@@ -7,7 +7,7 @@ Release:	2
 Summary:	A BitTorrent Client
 Group:		Networking/File transfer
 License:	GPLv2
-URL:		http://www.vuze.com/
+URL:		https://www.vuze.com/
 Source0:	http://sourceforge.net/projects/azureus/files/vuze/%{pkgname}_%{pkgversion}/%{pkgname}_%{pkgversion}_source.zip
 Source1:	azureus.script
 Source2:	Azureus.desktop
